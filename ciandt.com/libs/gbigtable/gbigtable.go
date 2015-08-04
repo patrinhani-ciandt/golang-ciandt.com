@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"io/ioutil"
+	"strings"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
@@ -46,7 +47,7 @@ func GetContext(timeout time.Duration) (context.Context) {
     return ctx
 }
 
-func openAdminClient(ctx context.Context, connectionData ClientConnectionData) (*bigtable.AdminClient) {
+func OpenAdminClient(ctx context.Context, connectionData ClientConnectionData) (*bigtable.AdminClient) {
 
 	clientOpt := getClientOptionFromJsonKeyFile(ctx, connectionData.KeyJsonFilePath, bigtable.AdminScope)
 		
@@ -59,9 +60,22 @@ func openAdminClient(ctx context.Context, connectionData ClientConnectionData) (
 	return client
 }
 
+func OpenClient(ctx context.Context, connectionData ClientConnectionData) (*bigtable.Client) {
+	
+	clientOpt := getClientOptionFromJsonKeyFile(ctx, connectionData.KeyJsonFilePath, bigtable.Scope)
+		
+	client, err := bigtable.NewClient(ctx, connectionData.Project, connectionData.Zone, connectionData.Cluster, clientOpt)	
+	
+	if err != nil {
+		fmt.Println("Error on [NewClient]: %v", err)
+	}
+
+	return client
+}
+
 func DeleteTable(connectionData ClientConnectionData, ctx context.Context, tableName string) {
 
-	adminClient := openAdminClient(ctx, connectionData)
+	adminClient := OpenAdminClient(ctx, connectionData)
 
 	fmt.Println("Deleting table ...")
 	err := adminClient.DeleteTable(ctx, tableName)
@@ -74,7 +88,7 @@ func DeleteTable(connectionData ClientConnectionData, ctx context.Context, table
 
 func CreateTable(connectionData ClientConnectionData, ctx context.Context, tableName string, families []string) {
 	
-	adminClient := openAdminClient(ctx, connectionData)
+	adminClient := OpenAdminClient(ctx, connectionData)
 
 	fmt.Println("Creating table ...")
 	err := adminClient.CreateTable(ctx, tableName)
@@ -94,4 +108,32 @@ func CreateTable(connectionData ClientConnectionData, ctx context.Context, table
 	}
 	
 	defer adminClient.Close()
+}
+
+func OpenTable(table string, client *bigtable.Client) (*bigtable.Table) {
+
+	fmt.Println("Opening Table ...")
+	tbl := client.Open(table)
+	
+	return tbl
+}
+
+func WriteRow(ctx context.Context, table *bigtable.Table, columnFamilySep string, rowKey string, columns []string, rowCells []string, startCellIndex int) {
+
+	mut := bigtable.NewMutation()
+
+	for i := startCellIndex; i < len(rowCells); i++ {
+
+		var colSet = strings.Split(columns[i], columnFamilySep)
+		fam := colSet[0]
+		col := colSet[1]
+		  
+		mut.Set(fam, col, 0, []byte(rowCells[i]))
+	}
+				
+	fmt.Println("Applying row: ", rowKey)
+	if err := table.Apply(ctx, rowKey, mut); err != nil {
+		
+		fmt.Println("Error on Mutating row %v: %v", rowKey, err)
+	}
 }

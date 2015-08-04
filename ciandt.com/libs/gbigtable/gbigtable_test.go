@@ -61,53 +61,6 @@ func main() {
 	// fmt.Println("Test")
 }
 
-func dropTable(tableName string) {
-
-	ctx := getContext(300 * time.Second);
-	
-	adminClient := openAdminClient(ctx, "bigdatagarage", "us-central1-c", "workshopanalytics")
-
-	err := adminClient.DeleteTable(ctx, tableName)
-	if err != nil {
-		fmt.Println("DeleteTable: %v", err)
-	}
-	
-	defer adminClient.Close()
-}
-
-func createTable_ego_produto() {
-	
-	families := []string{ "produto", "categoria", "localizacao", "loja", "periodo", "indicador" }
-	
-	createTable("ego-produto", families)
-}
-
-func createTable(tableName string, families []string) {
-
-	ctx := getContext(300 * time.Second);
-	
-	adminClient := openAdminClient(ctx, "bigdatagarage", "us-central1-c", "workshopanalytics")
-
-	fmt.Println("Start CreateTable ...")
-	err := adminClient.CreateTable(ctx, tableName)
-	if err != nil {
-		fmt.Println("CreateTable: %v", err)
-	}
-
-	fmt.Println("Start Create Families ...")	
-	for i := 0; i < len(families); i++ {
-		
-		fmt.Println("Creating Family: %v", families[i])
-
-		err = adminClient.CreateColumnFamily(ctx, tableName, families[i])
-		if err != nil {
-			fmt.Println("CreateColumnFamily: %v", err)
-		}
-	}
-	
-	defer adminClient.Close()
-}
-
 func importCSVOnTable(csvFilePath, tableName string) {
 
 	ctx := getContext(20 * time.Second);
@@ -182,14 +135,6 @@ func printDataFromTable(tableName string) {
 	defer client.Close()
 }
 
-func openTable(table string, client *bigtable.Client) (*bigtable.Table) {
-
-	fmt.Println("Opening Table ...")
-	tbl := client.Open(table)
-	
-	return tbl
-}
-
 func getContext(timeout time.Duration) (context.Context) {
 	
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
@@ -216,32 +161,6 @@ func getClientOptionFromJsonKeyFile(ctx context.Context, keyFilePath string, sco
 	clientOption := cloud.WithTokenSource(config.TokenSource(ctx))
 	
 	return clientOption
-}
-
-func openAdminClient(ctx context.Context, project, zone, cluster string) (*bigtable.AdminClient) {
-
-	clientOpt := getClientOptionFromJsonKeyFile(ctx, KeyJsonFilePath, bigtable.AdminScope)
-		
-	client, err := bigtable.NewAdminClient(ctx, project, zone, cluster, clientOpt)	
-	
-	if err != nil {
-		fmt.Println("Partial ReadRows: %v", err)
-	}
-
-	return client
-}
-
-func openClient(ctx context.Context, project, zone, cluster string) (*bigtable.Client) {
-	
-	clientOpt := getClientOptionFromJsonKeyFile(ctx, KeyJsonFilePath, bigtable.Scope)
-		
-	client, err := bigtable.NewClient(ctx, project, zone, cluster, clientOpt)	
-	
-	if err != nil {
-		fmt.Println("Partial ReadRows: %v", err)
-	}
-
-	return client
 }
 
 type processCSVLine func([]string)

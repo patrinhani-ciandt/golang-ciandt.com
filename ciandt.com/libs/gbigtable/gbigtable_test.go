@@ -45,10 +45,10 @@ func main() {
 	// 	"test-tmp",
 	// 	[]string{})
 
-	gbigtable.DeleteTable(
-		bigtableClientConnData,
-		gbigtable.GetContext(300 * time.Second),
-		"test-tmp")
+	// gbigtable.DeleteTable(
+	// 	bigtableClientConnData,
+	// 	gbigtable.GetContext(300 * time.Second),
+	// 	"test-tmp")
 
 	//printDataFromTable("ego-produto")
 	
@@ -57,8 +57,6 @@ func main() {
 	// createTable_ego_produto();
 		
 	//importCSVOnTable("data/ego-produto.csv", "ego-produto")
-	
-	// fmt.Println("Test")
 }
 
 func importCSVOnTable(csvFilePath, tableName string) {

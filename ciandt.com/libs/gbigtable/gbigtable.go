@@ -12,11 +12,18 @@ import (
 	"google.golang.org/cloud/bigtable"	
 )
 
+type ProcessDataTableRow func(DtRow)
+
 type ClientConnectionData struct { 
 	Project string
 	Zone string
 	Cluster string
 	KeyJsonFilePath string
+}
+
+type DtRow struct {
+	Key string
+	Families map[string]map[string]interface{}
 }
 
 func getClientOptionFromJsonKeyFile(ctx context.Context, keyFilePath string, scope string) (cloud.ClientOption) {
@@ -136,4 +143,71 @@ func WriteRow(ctx context.Context, table *bigtable.Table, columnFamilySep string
 		
 		fmt.Println("Error on Mutating row %v: %v", rowKey, err)
 	}
+}
+
+func extractDtRowFromBigTableRow(r bigtable.Row) DtRow {
+
+	row := DtRow {
+		Families: make(map[string]map[string]interface{}),
+	}
+
+	for _, ris := range r {
+
+		for _, ri := range ris {
+			
+			var colSet = strings.Split(ri.Column, ":")
+			fam := colSet[0]
+			col := colSet[1]
+		
+			cellValue := fmt.Sprintf("%s", ri.Value)
+			
+			row.Key = ri.Row;
+			
+			mFamilies, okMapFamilies := row.Families[fam]
+			if !okMapFamilies {
+				mFamilies = make(map[string]interface{})
+				row.Families[fam] = mFamilies
+			}
+			
+			row.Families[fam][col] = cellValue;
+		}
+		
+	}
+
+	return row;
+}
+
+func ReadRow(ctx context.Context, table *bigtable.Table, rowKey string) DtRow {
+
+	var row DtRow; 
+
+	r, err := table.ReadRow(ctx, rowKey)
+
+	if err != nil {
+		
+		fmt.Println("Error on [ReadRow]: %v", err)
+	} else {
+		
+		row = extractDtRowFromBigTableRow(r)
+	}
+	
+	return row;
+}
+
+func ReadRows(ctx context.Context, table *bigtable.Table, rowRange bigtable.RowRange, processDataTableRow ProcessDataTableRow, opts ...bigtable.ReadOption) {
+	
+	fmt.Println("Reading Rows ...")
+	table.ReadRows(ctx, rowRange, func(r bigtable.Row) bool {
+    	
+		row := extractDtRowFromBigTableRow(r)
+		
+		processDataTableRow(row)
+
+		return true
+	}, opts...)
+}
+
+func ReadAllRows(ctx context.Context, table *bigtable.Table, processDataTableRow ProcessDataTableRow) {
+	
+	ReadRows(ctx, table, bigtable.InfiniteRange(""), processDataTableRow)
 }

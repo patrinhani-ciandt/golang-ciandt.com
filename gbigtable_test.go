@@ -71,6 +71,11 @@ func main() {
 
 func createTable_ego_produto(bigtableClientConnData gbigtable.ClientConnectionData) {
 
+	gbigtable.DeleteTable(
+	 	bigtableClientConnData,
+	 	gbigtable.GetContext(300 * time.Second),
+	 	"ego-produto")
+
 	families := []string{ "produto", "categoria", "localizacao", "loja", "periodo", "indicador" }
 
 	gbigtable.CreateTable(

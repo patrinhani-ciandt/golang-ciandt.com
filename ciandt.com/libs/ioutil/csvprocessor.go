@@ -9,7 +9,7 @@ import (
 
 type ProcessCSVLine func([]string)
 
-func ProcessCSVFile(filePath string, processHeader ProcessCSVLine, processData ProcessCSVLine) {
+func ProcessCSVFile(filePath string, delimiter string, processHeader ProcessCSVLine, processData ProcessCSVLine) {
 	
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -24,7 +24,7 @@ func ProcessCSVFile(filePath string, processHeader ProcessCSVLine, processData P
 	reader := csv.NewReader(file)
 	// options are available at:
 	// http://golang.org/src/pkg/encoding/csv/reader.go?s=3213:3671#L94
-	reader.Comma = ';'
+	reader.Comma = delimiter
 	lineCount := 0
 		
 	for {

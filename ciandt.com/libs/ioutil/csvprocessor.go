@@ -9,7 +9,7 @@ import (
 
 type ProcessCSVLine func([]string)
 
-func ProcessCSVFile(filePath string, delimiter string, processHeader ProcessCSVLine, processData ProcessCSVLine) {
+func ProcessCSVFile(filePath string, delimiter rune, processHeader ProcessCSVLine, processData ProcessCSVLine) {
 	
 	file, err := os.Open(filePath)
 	if err != nil {

@@ -99,6 +99,7 @@ func importCSVOnTable(bigtableClientConnData gbigtable.ClientConnectionData, csv
 	var strColumns []string
 
 	csvprocessor.ProcessCSVFile(csvFilePath,
+		',',
 		func (headerData []string) {
 
 			strColumns = headerData

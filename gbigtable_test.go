@@ -13,12 +13,12 @@ import (
 	// "google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable"
 
-	"app/ciandt.com/libs/gbigtable"
-	"app/ciandt.com/libs/ioutil"
+	"ciandt.com/libs/gbigtable"
+	"ciandt.com/libs/ioutil"
 )
 
 const (
-	KeyJsonFilePath = "/home/key.json"
+	KeyJsonFilePath = "/storage/key.json"
     // Scope is the OAuth scope for Cloud Bigtable data operations.
     // Scope = "https://www.googleapis.com/auth/bigtable.data"
     // ReadonlyScope is the OAuth scope for Cloud Bigtable read-only data operations.
@@ -47,7 +47,7 @@ func main() {
 
 	//importCSVOnTable(bigtableClientConnData, "data/test-tmp.csv", "test-tmp")
 
-	printAllRowsFromTable(bigtableClientConnData, "test-tmp")
+	//printAllRowsFromTable(bigtableClientConnData, "test-tmp")
 
 	// printRowFromTable(bigtableClientConnData, "test-tmp", "mykey01")
 

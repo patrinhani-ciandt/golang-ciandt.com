@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/cloud/bigtable"
 
-	"ciandt.com/libs/gbigtable"
+	"ciandt.golang.org/libs/gbigtable"
 )
 
 const (

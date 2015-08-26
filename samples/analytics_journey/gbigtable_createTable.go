@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"ciandt.com/libs/gbigtable"
+	"ciandt.golang.org/libs/gbigtable"
 )
 
 const (

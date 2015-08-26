@@ -5,7 +5,7 @@ import (
 	"time"
 	"encoding/json"
 
-	"ciandt.com/libs/gbigtable"
+	"ciandt.golang.org/libs/gbigtable"
 )
 
 const (

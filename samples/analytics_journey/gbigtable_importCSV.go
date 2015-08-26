@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"ciandt.com/libs/gbigtable"
-	"ciandt.com/libs/ioutil"
+	"ciandt.golang.org/libs/gbigtable"
+	"ciandt.golang.org/libs/ioutil"
 )
 
 const (

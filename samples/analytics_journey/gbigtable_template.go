@@ -3,14 +3,8 @@ package main
 import (
 	"fmt"
 	"time"
-	// "strings"
 	"encoding/json"
 
-	// iconv "github.com/djimenez/iconv-go"
-
-	// "golang.org/x/net/context"
-	// "golang.org/x/oauth2/google"
-	// "google.golang.org/cloud"
 	"google.golang.org/cloud/bigtable"
 
 	"ciandt.com/libs/gbigtable"
@@ -18,13 +12,7 @@ import (
 )
 
 const (
-	KeyJsonFilePath = "/storage/key.json"
-    // Scope is the OAuth scope for Cloud Bigtable data operations.
-    // Scope = "https://www.googleapis.com/auth/bigtable.data"
-    // ReadonlyScope is the OAuth scope for Cloud Bigtable read-only data operations.
-    // ReadonlyScope = "https://www.googleapis.com/auth/bigtable.readonly"
-    // AdminScope is the OAuth scope for Cloud Bigtable table admin operations.
-    // AdminScope = "https://www.googleapis.com/auth/bigtable.admin.table"
+	KeyJsonFilePath = "/home/key.json"
 )
 
 func main() {
@@ -35,7 +23,7 @@ func main() {
 		Project: "bigdatagarage",
 		Zone: "us-central1-c",
 		Cluster: "workshopanalytics",
-		KeyJsonFilePath: "/home/key.json",
+		KeyJsonFilePath: KeyJsonFilePath,
 	}
 
 	//gbigtable.DeleteTable(
